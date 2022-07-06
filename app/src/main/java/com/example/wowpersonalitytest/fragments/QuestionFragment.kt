@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.example.wowpersonalitytest.R
 import com.example.wowpersonalitytest.databinding.FragmentQuestionBinding
 
@@ -39,9 +40,29 @@ class QuestionFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         fragmentBinding = FragmentQuestionBinding.inflate(layoutInflater)
+        initListeners()
         return fragmentBinding.root
 
     //return inflater.inflate(R.layout.fragment_question, container, false)
+    }
+
+    private fun initListeners() {
+        fragmentBinding.buttonFirstAnswer.setOnClickListener(View.OnClickListener {
+            // TODO: implement
+        })
+
+        fragmentBinding.buttonSecondAnswer.setOnClickListener(View.OnClickListener {
+            // TODO: implement
+        })
+
+        fragmentBinding.buttonNextQuestion.setOnClickListener(View.OnClickListener {
+            // TODO: implement
+        })
+
+        fragmentBinding.buttonPreviousQuestion.setOnClickListener(View.OnClickListener {
+            // TODO: implement
+        })
+
     }
 
     companion object {
