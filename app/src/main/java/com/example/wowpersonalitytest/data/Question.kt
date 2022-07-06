@@ -5,7 +5,6 @@ import java.util.*
 
 data class Question(
     @StringRes val questionResId: Int,
-    @StringRes val trueAnswer: Int,
-    val anotherAnswersList: LinkedList<Int>
+    val answer: Boolean
     ) {
 }

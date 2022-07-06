@@ -4,7 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/yellow_background"
     tools:context=".fragments.QuestionFragment">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imageView"
+        android:layout_width="350dp"
+        android:layout_height="250dp"
+        android:layout_margin="16dp"
+        android:src="@drawable/warcraft_thumbnail_e1605049072488"
+        app:shapeAppearance="@style/ShapeAppearanceOverlay.Picture"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <TextView
         android:id="@+id/textView"
@@ -12,48 +25,40 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="@string/default_question"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/text"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <Button
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/button_first_answer"
+        android:text="@string/default_question_first_answer"
+        android:backgroundTint="@color/buttons_background"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        android:layout_margin="16dp"
-        />
+        android:layout_margin="16dp" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/button_second_answer"
+        android:text="@string/default_question_second_answer"
+        android:backgroundTint="@color/buttons_background"
         app:layout_constraintTop_toBottomOf="@+id/button_first_answer"
         android:layout_margin="16dp"
         />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/button_third_answer"
-        app:layout_constraintTop_toBottomOf="@+id/button_second_answer"
-        android:layout_margin="16dp"
-        />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/button_fourth_answer"
-        app:layout_constraintTop_toBottomOf="@+id/button_third_answer"
-        android:layout_margin="16dp"
-        />
 
     <Button
         android:id="@+id/button_next_question"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:text="@string/button_next"
+        android:backgroundTint="@color/buttons_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_percent="0.4" />
@@ -63,9 +68,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:layout_marginBottom="200dp"
+        android:text="@string/button_previous"
+        android:backgroundTint="@color/buttons_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_percent="0.4" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
