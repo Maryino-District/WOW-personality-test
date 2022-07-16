@@ -3,8 +3,13 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="default_question">Are you Horde?</string>
-    <string name="default_question_first_answer">True</string>
-    <string name="default_question_second_answer">False</string>
+    <string name="button_first_answer">True</string>
+    <string name="button_second_answer">False</string>
+    <string name="question_first">Blizzard publishes "World of Warcraft"?</string>
+    <string name="question_second">Dwarf are species are most characters in the game? </string>
+    <string name="question_third">World of Warcraft released in 2005? </string>
+    <string name="question_fourth">Leathercraft  is NOT a secondary skill your character can learn during gameplay? </string>
+    <string name="question_fifth"> Azeroth is NOT a continent in the Eastern Kingdoms?  </string>
     <string name="button_previous">Previous</string>
     <string name="button_next">Next</string>
 

@@ -7,10 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="color_accent">#FFFFFFFF</color>
-    <color name="yellow_background">#F2E205</color>
-    <color name="buttons_background">#F29422</color>
+    <color name="yellow_background">#FFF999</color>
+    <color name="buttons_solid">#F29422</color>
     <color name="text">#261511</color>
     <color name="color_primary_dark">#261511</color>
-    <color name="color_primary">#F28627</color>
+    <color name="color_primary">#EDE26D</color>
 
 </resources>
