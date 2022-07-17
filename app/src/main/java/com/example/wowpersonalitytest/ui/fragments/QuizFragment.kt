@@ -16,10 +16,7 @@ import java.lang.ref.WeakReference
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-private var _fragmentBinding: FragmentQuizBinding? = null
-private val fragmentBinding get() = _fragmentBinding!!
-private lateinit var data: List<Question>
-private var currentQuestion: Int = 0 // Counter of question number
+// Counter of question number
 
 /**
  * A simple [Fragment] subclass.
@@ -27,6 +24,10 @@ private var currentQuestion: Int = 0 // Counter of question number
  * create an instance of this fragment.
  */
 class QuestionFragment : Fragment() {
+    private var _fragmentBinding: FragmentQuizBinding? = null
+    private val fragmentBinding get() = _fragmentBinding!!
+    private lateinit var data: List<Question>
+    private var currentQuestion: Int = 0
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -69,19 +70,17 @@ class QuestionFragment : Fragment() {
         })
 
         fragmentBinding.buttonNextQuestion.setOnClickListener(View.OnClickListener {
-            val question = getNextQuestion(currentQuestion)
-            fragmentBinding.textView.setText(question.questionResId)
+            getNextQuestion().let {
+                fragmentBinding.textView.setText(it.questionResId)
+            }
         })
 
         fragmentBinding.buttonPreviousQuestion.setOnClickListener(View.OnClickListener {
-            // TODO: implement
+            getPreviousQuestion().let {
+                fragmentBinding.textView.setText(it.questionResId)
+            }
         })
 
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _fragmentBinding = null
     }
 
     private fun initTempData() {
@@ -92,19 +91,33 @@ class QuestionFragment : Fragment() {
             Question(R.string.question_fourth, R.drawable.image_leathercraft, true),
             Question(R.string.question_fifth, R.drawable.image_azeroth, false)
         )
-
     }
 
     private fun getNumberOfQuestions(questions: List<Question>) : Int = questions.size
 
-    private fun getNextQuestion(counter: Int) : Question {
+    private fun getNextQuestion() : Question {
         increaseQuestionsNumber()
         return data[currentQuestion]
+    }
+
+    private fun getPreviousQuestion() : Question {
+        decreaseQuestionNumber()
+        return data[currentQuestion]
+    }
+
+    private fun decreaseQuestionNumber() : Boolean {
+        currentQuestion = (getNumberOfQuestions(data) + (currentQuestion - 1)) % getNumberOfQuestions(data)
+        return true
     }
 
     private fun increaseQuestionsNumber() : Boolean {
         currentQuestion = (currentQuestion + 1) % getNumberOfQuestions(data)
         return true
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _fragmentBinding = null
     }
 
 
@@ -128,9 +141,3 @@ class QuestionFragment : Fragment() {
             }
     }
 }
-//+1create counter
-//3create cycle plus counter function
-//+2create get number of questions for function 3
-//4create setquestion(id) incapsulate set
-//5getid function(question)
-//6getquestionObject
