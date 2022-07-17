@@ -16,8 +16,10 @@ import java.lang.ref.WeakReference
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-private lateinit var fragmentBinding: FragmentQuizBinding
+private var _fragmentBinding: FragmentQuizBinding? = null
+private val fragmentBinding get() = _fragmentBinding!!
 private lateinit var data: List<Question>
+private var currentQuestion: Int = 0
 
 /**ddd
  * A simple [Fragment] subclass.
@@ -42,10 +44,12 @@ class QuestionFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         // Inflate the layout for this fragment
-        fragmentBinding = FragmentQuizBinding.inflate(layoutInflater)
+        _fragmentBinding = FragmentQuizBinding.inflate(layoutInflater)
         initListeners()
         initTempData()
+
         fragmentBinding.textView.setText(data.first().questionResId)
         return fragmentBinding.root
 
@@ -74,8 +78,19 @@ class QuestionFragment : Fragment() {
 
     }
 
-    fun initTempData() {
-        data = listOf(Question(R.string.default_question, true))
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _fragmentBinding = null
+    }
+
+    private fun initTempData() {
+        data = listOf(
+            Question(R.string.question_first, R.drawable.image_first_question, true),
+            Question(R.string.question_second, R.drawable.image_dwarf, false),
+            Question(R.string.question_third, R.drawable.image_pandaria, false),
+            Question(R.string.question_fourth, R.drawable.image_leathercraft, true),
+            Question(R.string.question_fifth, R.drawable.image_azeroth, false)
+        )
 
     }
 
