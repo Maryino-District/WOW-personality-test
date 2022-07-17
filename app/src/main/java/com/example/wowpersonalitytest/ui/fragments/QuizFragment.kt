@@ -19,9 +19,9 @@ private const val ARG_PARAM2 = "param2"
 private var _fragmentBinding: FragmentQuizBinding? = null
 private val fragmentBinding get() = _fragmentBinding!!
 private lateinit var data: List<Question>
-private var currentQuestion: Int = 0
+private var currentQuestion: Int = 0 // Counter of question number
 
-/**ddd
+/**
  * A simple [Fragment] subclass.
  * Use the [QuestionFragment.newInstance] factory method to
  * create an instance of this fragment.
@@ -69,7 +69,8 @@ class QuestionFragment : Fragment() {
         })
 
         fragmentBinding.buttonNextQuestion.setOnClickListener(View.OnClickListener {
-            // TODO: implement
+            val question = getNextQuestion(currentQuestion)
+            fragmentBinding.textView.setText(question.questionResId)
         })
 
         fragmentBinding.buttonPreviousQuestion.setOnClickListener(View.OnClickListener {
@@ -94,6 +95,19 @@ class QuestionFragment : Fragment() {
 
     }
 
+    private fun getNumberOfQuestions(questions: List<Question>) : Int = questions.size
+
+    private fun getNextQuestion(counter: Int) : Question {
+        increaseQuestionsNumber()
+        return data[currentQuestion]
+    }
+
+    private fun increaseQuestionsNumber() : Boolean {
+        currentQuestion = (currentQuestion + 1) % getNumberOfQuestions(data)
+        return true
+    }
+
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -114,3 +128,9 @@ class QuestionFragment : Fragment() {
             }
     }
 }
+//+1create counter
+//3create cycle plus counter function
+//+2create get number of questions for function 3
+//4create setquestion(id) incapsulate set
+//5getid function(question)
+//6getquestionObject
