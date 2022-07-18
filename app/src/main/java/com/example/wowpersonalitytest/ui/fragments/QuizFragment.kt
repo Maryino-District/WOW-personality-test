@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import com.example.wowpersonalitytest.R
 import com.example.wowpersonalitytest.data.Question
 import com.example.wowpersonalitytest.databinding.FragmentQuizBinding
-import java.lang.ref.WeakReference
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,7 +37,6 @@ class QuestionFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
     }
 
     override fun onCreateView(
@@ -51,34 +49,28 @@ class QuestionFragment : Fragment() {
         initListeners()
         initTempData()
 
-        fragmentBinding.textView.setText(data.first().questionResId)
+        setQuestionsAttributes(data.first())
+
         return fragmentBinding.root
 
         //return inflater.inflate(R.layout.fragment_question, container, false)
     }
 
     private fun initListeners() {
-        fragmentBinding.buttonFirstAnswer.setOnClickListener(View.OnClickListener {
-            Toast.makeText(context, "ok, it's you", Toast.LENGTH_SHORT).show()
+        fragmentBinding.buttonTrueAnswer.setOnClickListener(View.OnClickListener {
+            checkAnswer(true)
         })
 
-        fragmentBinding.buttonSecondAnswer.setOnClickListener(View.OnClickListener {
-            Toast.makeText(context, "ok, it's not you", Toast.LENGTH_SHORT).apply {
-                setGravity(Gravity.TOP,0,0)
-                show()
-            }
+        fragmentBinding.buttonFalseAnswer.setOnClickListener(View.OnClickListener {
+            checkAnswer(false)
         })
 
         fragmentBinding.buttonNextQuestion.setOnClickListener(View.OnClickListener {
-            getNextQuestion().let {
-                fragmentBinding.textView.setText(it.questionResId)
-            }
+            setQuestionsAttributes(getNextQuestion())
         })
 
         fragmentBinding.buttonPreviousQuestion.setOnClickListener(View.OnClickListener {
-            getPreviousQuestion().let {
-                fragmentBinding.textView.setText(it.questionResId)
-            }
+            setQuestionsAttributes(getPreviousQuestion())
         })
 
     }
@@ -115,9 +107,30 @@ class QuestionFragment : Fragment() {
         return true
     }
 
+    private fun isProperAnswer(userAnswer: Boolean) : Boolean {
+        return getProperAnswer(data[currentQuestion]) == userAnswer
+    }
+
+    private fun checkAnswer(userAnswer: Boolean) {
+        if (isProperAnswer(userAnswer)) {
+            Toast.makeText(context,"Good!", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "naaah, try again", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun getProperAnswer(question: Question) = question.answer
+
     override fun onDestroyView() {
         super.onDestroyView()
         _fragmentBinding = null
+    }
+
+    private fun setQuestionsAttributes(question: Question) {
+        fragmentBinding.apply {
+            imageView.setImageResource(question.imageResId)
+            textView.setText(question.questionResId)
+        }
     }
 
 
