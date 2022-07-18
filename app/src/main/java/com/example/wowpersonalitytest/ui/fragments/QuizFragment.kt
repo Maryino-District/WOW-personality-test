@@ -1,6 +1,8 @@
 package com.example.wowpersonalitytest.ui.fragments
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +17,7 @@ import com.example.wowpersonalitytest.databinding.FragmentQuizBinding
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
+private const val LOG_TAG = "FragmentQuestion"
 // Counter of question number
 
 /**
@@ -33,6 +36,7 @@ class QuestionFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(LOG_TAG, "onCreateFragment")
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
@@ -43,12 +47,11 @@ class QuestionFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        Log.d(LOG_TAG, "onCreateViewFragment")
         // Inflate the layout for this fragment
         _fragmentBinding = FragmentQuizBinding.inflate(layoutInflater)
         initListeners()
         initTempData()
-
         setQuestionsAttributes(data.first())
 
         return fragmentBinding.root
@@ -121,10 +124,6 @@ class QuestionFragment : Fragment() {
 
     private fun getProperAnswer(question: Question) = question.answer
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _fragmentBinding = null
-    }
 
     private fun setQuestionsAttributes(question: Question) {
         fragmentBinding.apply {
@@ -132,6 +131,57 @@ class QuestionFragment : Fragment() {
             textView.setText(question.questionResId)
         }
     }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Log.d(LOG_TAG, "onAttachFragment")
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d(LOG_TAG, "onViewCreatedFragment")
+
+    }
+    override fun onStart() {
+        super.onStart()
+        Log.d(LOG_TAG, "onStartFragment")
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(LOG_TAG, "onResumeFragment")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(LOG_TAG, "onPauseFragment")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(LOG_TAG, "onStopFragment")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d(LOG_TAG, "onDestroyViewFragment")
+
+        _fragmentBinding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(LOG_TAG, "onDestroyFragment")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.d(LOG_TAG, "onDetachFragment")
+    }
+
+
+
 
 
     companion object {
