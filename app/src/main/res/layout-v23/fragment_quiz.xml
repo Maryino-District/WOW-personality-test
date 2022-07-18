@@ -71,6 +71,7 @@
         app:strokeWidth="1dp"
         app:cornerRadius="16dp"
         android:drawableEnd="@drawable/arrow_right"
+        android:drawableTint="@color/color_primary_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_percent="0.4" />
