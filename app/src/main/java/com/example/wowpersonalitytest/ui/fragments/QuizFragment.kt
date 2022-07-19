@@ -17,7 +17,7 @@ import com.example.wowpersonalitytest.databinding.FragmentQuizBinding
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-private const val LOG_TAG = "FragmentQuestion"
+private const val LOG_TAG = "QuestionFragment"
 // Counter of question number
 
 /**
