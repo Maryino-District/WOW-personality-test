@@ -3,11 +3,12 @@ package com.example.wowpersonalitytest.ui.fragments
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.wowpersonalitytest.R
 import com.example.wowpersonalitytest.data.Question
@@ -29,6 +30,7 @@ class QuestionFragment : Fragment() {
     private var _fragmentBinding: FragmentQuizBinding? = null
     private val fragmentBinding get() = _fragmentBinding!!
     private lateinit var data: List<Question>
+    private lateinit var answeredQuestions: MutableList<Int>
     private var currentQuestion: Int = 0
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -50,30 +52,51 @@ class QuestionFragment : Fragment() {
         Log.d(LOG_TAG, "onCreateViewFragment")
         // Inflate the layout for this fragment
         _fragmentBinding = FragmentQuizBinding.inflate(layoutInflater)
-        initListeners()
         initTempData()
+        answeredQuestions = mutableListOf()
         setQuestionsAttributes(data.first())
-
         return fragmentBinding.root
 
         //return inflater.inflate(R.layout.fragment_question, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initListeners()
+        Log.d(LOG_TAG, "onViewCreatedFragment")
+
+    }
+
     private fun initListeners() {
         fragmentBinding.buttonTrueAnswer.setOnClickListener(View.OnClickListener {
+            answeredQuestions.add(currentQuestion)
+            disableButtons(fragmentBinding.buttonFalseAnswer, fragmentBinding.buttonTrueAnswer)
             checkAnswer(true)
         })
 
         fragmentBinding.buttonFalseAnswer.setOnClickListener(View.OnClickListener {
+            answeredQuestions.add(currentQuestion)
+            disableButtons(fragmentBinding.buttonFalseAnswer, fragmentBinding.buttonTrueAnswer)
             checkAnswer(false)
         })
 
         fragmentBinding.buttonNextQuestion.setOnClickListener(View.OnClickListener {
             setQuestionsAttributes(getNextQuestion())
+            if (!isAnswered(currentQuestion)) {
+                enableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
+            } else {
+                disableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
+            }
+
         })
 
         fragmentBinding.buttonPreviousQuestion.setOnClickListener(View.OnClickListener {
             setQuestionsAttributes(getPreviousQuestion())
+            if (!isAnswered(currentQuestion)) {
+                enableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
+            } else {
+                disableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
+            }
         })
 
     }
@@ -86,6 +109,20 @@ class QuestionFragment : Fragment() {
             Question(R.string.question_fourth, R.drawable.image_leathercraft, true),
             Question(R.string.question_fifth, R.drawable.image_azeroth, false)
         )
+    }
+
+    private fun disableButtons(vararg view: Button) {
+        view.forEach {
+            it.isClickable = false
+            it.setBackgroundColor(ContextCompat.getColor(requireActivity(), R.color.buttons_solid))
+        }
+    }
+
+    private fun enableButtons(vararg view: Button) {
+        view.forEach {
+            it.isClickable = true
+            it.setBackgroundColor(ContextCompat.getColor(requireActivity(), R.color.yellow_background))
+        }
     }
 
     private fun getNumberOfQuestions(questions: List<Question>) : Int = questions.size
@@ -132,16 +169,19 @@ class QuestionFragment : Fragment() {
         }
     }
 
+    private fun isAnswered(numberOfQuestion: Int) : Boolean = answeredQuestions.contains(numberOfQuestion)
+
+    private fun markAsAnswered(numberOfQuestion: Int) : Boolean {
+        if (!answeredQuestions.contains(numberOfQuestion)) answeredQuestions.add(numberOfQuestion)
+        return true
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         Log.d(LOG_TAG, "onAttachFragment")
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Log.d(LOG_TAG, "onViewCreatedFragment")
 
-    }
     override fun onStart() {
         super.onStart()
         Log.d(LOG_TAG, "onStartFragment")
@@ -179,6 +219,7 @@ class QuestionFragment : Fragment() {
         super.onDetach()
         Log.d(LOG_TAG, "onDetachFragment")
     }
+
 
 
 
