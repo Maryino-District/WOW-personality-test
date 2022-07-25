@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity(), FragmentSwitchListener {
     }
 
     override fun switch(fragment: Fragment) {
-        val replace = supportFragmentManager.beginTransaction()
+        supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container_view, fragment)
             .commit()
     }

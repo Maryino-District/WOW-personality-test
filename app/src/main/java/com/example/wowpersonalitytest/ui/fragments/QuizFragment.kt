@@ -14,11 +14,12 @@ import androidx.fragment.app.Fragment
 import com.example.wowpersonalitytest.R
 import com.example.wowpersonalitytest.data.Question
 import com.example.wowpersonalitytest.databinding.FragmentQuizBinding
+import com.example.wowpersonalitytest.ui.interfaces.FragmentSwitchListener
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+private const val ARG_PARAM1 = "properAnswers"
+private const val ARG_PARAM2 = "numberOfQuestions"
 private const val LOG_TAG = "QuestionFragment"
 // Counter of question number
 
@@ -28,22 +29,21 @@ private const val LOG_TAG = "QuestionFragment"
  * create an instance of this fragment.
  */
 class QuestionFragment : Fragment() {
+    private var switchListener: FragmentSwitchListener? = null
     private var _fragmentBinding: FragmentQuizBinding? = null
     private val fragmentBinding get() = _fragmentBinding!!
     private lateinit var data: List<Question>
     private lateinit var answeredQuestions: MutableList<Int>
+    private var wrongAnswers: Int = 0
     private var currentQuestion: Int = 0
+
     // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(LOG_TAG, "onCreateFragment")
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
@@ -78,7 +78,7 @@ class QuestionFragment : Fragment() {
                     fragmentBinding.buttonNextQuestion,
                     fragmentBinding.textView,
                 )
-                fragmentBinding.buttonResults?.isVisible =true
+                fragmentBinding.buttonResults.isVisible = true
             }
         })
 
@@ -94,22 +94,32 @@ class QuestionFragment : Fragment() {
                     fragmentBinding.buttonNextQuestion,
                     fragmentBinding.textView,
                 )
-                fragmentBinding.buttonResults?.isVisible =true
+                fragmentBinding.buttonResults.isVisible = true
             }
         })
 
         fragmentBinding.buttonNextQuestion.setOnClickListener(View.OnClickListener {
             setQuestionsAttributes(getNextQuestion())
-            if (!isAnswered(currentQuestion)) enableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
+            if (!isAnswered(currentQuestion)) enableButtons(
+                fragmentBinding.buttonTrueAnswer,
+                fragmentBinding.buttonFalseAnswer
+            )
             else disableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
 
         })
 
         fragmentBinding.buttonPreviousQuestion.setOnClickListener(View.OnClickListener {
             setQuestionsAttributes(getPreviousQuestion())
-            if (!isAnswered(currentQuestion)) enableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
+            if (!isAnswered(currentQuestion)) enableButtons(
+                fragmentBinding.buttonTrueAnswer,
+                fragmentBinding.buttonFalseAnswer
+            )
             else disableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
         })
+
+        fragmentBinding.buttonResults.setOnClickListener {
+            switchListener?.switch(ResultsFragment.newInstance(data.size-wrongAnswers, data.size))
+        }
 
     }
 
@@ -133,41 +143,48 @@ class QuestionFragment : Fragment() {
     private fun enableButtons(vararg view: Button) {
         view.forEach {
             it.isClickable = true
-            it.setBackgroundColor(ContextCompat.getColor(requireActivity(), R.color.yellow_background))
+            it.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireActivity(),
+                    R.color.yellow_background
+                )
+            )
         }
     }
 
-    private fun getNumberOfQuestions(questions: List<Question>) : Int = questions.size
+    private fun getNumberOfQuestions(questions: List<Question>): Int = questions.size
 
-    private fun getNextQuestion() : Question {
+    private fun getNextQuestion(): Question {
         increaseQuestionsNumber()
         return data[currentQuestion]
     }
 
-    private fun getPreviousQuestion() : Question {
+    private fun getPreviousQuestion(): Question {
         decreaseQuestionNumber()
         return data[currentQuestion]
     }
 
-    private fun decreaseQuestionNumber() : Boolean {
-        currentQuestion = (getNumberOfQuestions(data) + (currentQuestion - 1)) % getNumberOfQuestions(data)
+    private fun decreaseQuestionNumber(): Boolean {
+        currentQuestion =
+            (getNumberOfQuestions(data) + (currentQuestion - 1)) % getNumberOfQuestions(data)
         return true
     }
 
-    private fun increaseQuestionsNumber() : Boolean {
+    private fun increaseQuestionsNumber(): Boolean {
         currentQuestion = (currentQuestion + 1) % getNumberOfQuestions(data)
         return true
     }
 
-    private fun isProperAnswer(userAnswer: Boolean) : Boolean {
+    private fun isProperAnswer(userAnswer: Boolean): Boolean {
         return getProperAnswer(data[currentQuestion]) == userAnswer
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
         if (isProperAnswer(userAnswer)) {
-            Toast.makeText(context,"Good!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Good!", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(context, "naaah, try again", Toast.LENGTH_SHORT).show()
+            wrongAnswers++
         }
     }
 
@@ -181,23 +198,20 @@ class QuestionFragment : Fragment() {
         }
     }
 
-    private fun isAnswered(numberOfQuestion: Int) : Boolean = answeredQuestions.contains(numberOfQuestion)
-
-    private fun markAsAnswered(numberOfQuestion: Int) : Boolean {
-        if (!answeredQuestions.contains(numberOfQuestion)) answeredQuestions.add(numberOfQuestion)
-        return true
-    }
-
+    private fun isAnswered(numberOfQuestion: Int): Boolean =
+        answeredQuestions.contains(numberOfQuestion)
 
 
     private fun prepareInterfaceForResults(vararg invisibleView: View) {
         invisibleView.forEach { it.isVisible = false }
     }
 
-    private fun isEndOfQuiz(numberOfQuestions: Int, numberOfAnswers: Int) = numberOfAnswers == numberOfQuestions
+    private fun isEndOfQuiz(numberOfQuestions: Int, numberOfAnswers: Int) =
+        numberOfAnswers == numberOfQuestions
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        if (context is FragmentSwitchListener) switchListener = context
         Log.d(LOG_TAG, "onAttachFragment")
     }
 
@@ -226,7 +240,6 @@ class QuestionFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         Log.d(LOG_TAG, "onDestroyViewFragment")
-
         _fragmentBinding = null
     }
 
@@ -238,6 +251,7 @@ class QuestionFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         Log.d(LOG_TAG, "onDetachFragment")
+        switchListener = null
     }
 
 
@@ -255,7 +269,7 @@ class QuestionFragment : Fragment() {
         fun newInstance() =
             QuestionFragment().apply {
                 arguments = Bundle().apply {
-                    }
+                }
             }
     }
 }
