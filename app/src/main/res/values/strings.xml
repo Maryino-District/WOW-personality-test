@@ -12,6 +12,8 @@
     <string name="question_fifth"> Azeroth is NOT a continent in the Eastern Kingdoms?  </string>
     <string name="button_previous">Previous</string>
     <string name="button_next">Next</string>
+    <string name="result_of_quiz">Your result is \n %2$d / %2$d</string>
+    <string name="button_results">Show results</string>
 
 
 </resources>

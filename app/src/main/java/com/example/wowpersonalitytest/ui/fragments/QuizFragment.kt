@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.wowpersonalitytest.R
 import com.example.wowpersonalitytest.data.Question
@@ -56,15 +57,12 @@ class QuestionFragment : Fragment() {
         answeredQuestions = mutableListOf()
         setQuestionsAttributes(data.first())
         return fragmentBinding.root
-
-        //return inflater.inflate(R.layout.fragment_question, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListeners()
         Log.d(LOG_TAG, "onViewCreatedFragment")
-
     }
 
     private fun initListeners() {
@@ -72,31 +70,45 @@ class QuestionFragment : Fragment() {
             answeredQuestions.add(currentQuestion)
             disableButtons(fragmentBinding.buttonFalseAnswer, fragmentBinding.buttonTrueAnswer)
             checkAnswer(true)
+            if (isEndOfQuiz(data.size, answeredQuestions.size)) {
+                prepareInterfaceForResults(
+                    fragmentBinding.buttonTrueAnswer,
+                    fragmentBinding.buttonFalseAnswer,
+                    fragmentBinding.buttonPreviousQuestion,
+                    fragmentBinding.buttonNextQuestion,
+                    fragmentBinding.textView,
+                )
+                fragmentBinding.buttonResults?.isVisible =true
+            }
         })
 
         fragmentBinding.buttonFalseAnswer.setOnClickListener(View.OnClickListener {
             answeredQuestions.add(currentQuestion)
             disableButtons(fragmentBinding.buttonFalseAnswer, fragmentBinding.buttonTrueAnswer)
             checkAnswer(false)
+            if (isEndOfQuiz(data.size, answeredQuestions.size)) {
+                prepareInterfaceForResults(
+                    fragmentBinding.buttonTrueAnswer,
+                    fragmentBinding.buttonFalseAnswer,
+                    fragmentBinding.buttonPreviousQuestion,
+                    fragmentBinding.buttonNextQuestion,
+                    fragmentBinding.textView,
+                )
+                fragmentBinding.buttonResults?.isVisible =true
+            }
         })
 
         fragmentBinding.buttonNextQuestion.setOnClickListener(View.OnClickListener {
             setQuestionsAttributes(getNextQuestion())
-            if (!isAnswered(currentQuestion)) {
-                enableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
-            } else {
-                disableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
-            }
+            if (!isAnswered(currentQuestion)) enableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
+            else disableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
 
         })
 
         fragmentBinding.buttonPreviousQuestion.setOnClickListener(View.OnClickListener {
             setQuestionsAttributes(getPreviousQuestion())
-            if (!isAnswered(currentQuestion)) {
-                enableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
-            } else {
-                disableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
-            }
+            if (!isAnswered(currentQuestion)) enableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
+            else disableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
         })
 
     }
@@ -176,6 +188,14 @@ class QuestionFragment : Fragment() {
         return true
     }
 
+
+
+    private fun prepareInterfaceForResults(vararg invisibleView: View) {
+        invisibleView.forEach { it.isVisible = false }
+    }
+
+    private fun isEndOfQuiz(numberOfQuestions: Int, numberOfAnswers: Int) = numberOfAnswers == numberOfQuestions
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         Log.d(LOG_TAG, "onAttachFragment")
@@ -221,10 +241,6 @@ class QuestionFragment : Fragment() {
     }
 
 
-
-
-
-
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -236,12 +252,10 @@ class QuestionFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             QuestionFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+                    }
             }
     }
 }

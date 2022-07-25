@@ -3,21 +3,33 @@ package com.example.wowpersonalitytest.ui.activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.Fragment
 import com.example.wowpersonalitytest.R
 import com.example.wowpersonalitytest.databinding.ActivityMainBinding
 import com.example.wowpersonalitytest.ui.fragments.QuestionFragment
+import com.example.wowpersonalitytest.ui.fragments.ResultsFragment
+import com.example.wowpersonalitytest.ui.interfaces.FragmentSwitchListener
+
 private const val LOG_TAG_MAIN = "MainActivity"
 
 private  lateinit var binding: ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), FragmentSwitchListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(LOG_TAG_MAIN, "onCreateActivity")
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_container_view, QuestionFragment())
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragment_container_view, QuestionFragment.newInstance())
+                .commit()
+            }
+    }
+
+    override fun switch(fragment: Fragment) {
+        val replace = supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container_view, fragment)
             .commit()
     }
 
