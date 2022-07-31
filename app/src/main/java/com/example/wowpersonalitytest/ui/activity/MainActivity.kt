@@ -3,12 +3,16 @@ package com.example.wowpersonalitytest.ui.activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.util.LogPrinter
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.wowpersonalitytest.R
 import com.example.wowpersonalitytest.databinding.ActivityMainBinding
 import com.example.wowpersonalitytest.ui.fragments.QuestionFragment
 import com.example.wowpersonalitytest.ui.fragments.ResultsFragment
 import com.example.wowpersonalitytest.ui.interfaces.FragmentSwitchListener
+import com.example.wowpersonalitytest.ui.viewmodel.QuestionViewModel
 
 private const val LOG_TAG_MAIN = "MainActivity"
 
@@ -57,4 +61,11 @@ class MainActivity : AppCompatActivity(), FragmentSwitchListener {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(LOG_TAG_MAIN, "onDestroyActivity")
-    }}
+    }
+
+    override fun isFinishing(): Boolean {
+        return super.isFinishing()
+        Log.d(LogPrinter, "Is Finishing")
+    }
+
+}
