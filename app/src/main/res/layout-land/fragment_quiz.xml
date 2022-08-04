@@ -31,7 +31,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <Button
-        android:id="@+id/button_true_answer"
+        android:id="@+id/button_true"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"

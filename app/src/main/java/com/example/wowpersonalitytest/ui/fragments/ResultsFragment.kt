@@ -23,7 +23,7 @@ class ResultsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _bindingFragment = FragmentResultsBinding.inflate(layoutInflater)
         return bindingFragment.root
     }
@@ -39,7 +39,8 @@ class ResultsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val text = requireActivity().resources.getString(R.string.result_of_quiz, 2,3)
-        bindingFragment.textResult.setText(res?.getString(R.string.text_results, correctAnswers, numberOfQuestions))
+        bindingFragment.textResult.text =
+            res?.getString(R.string.text_results, correctAnswers, numberOfQuestions)
     }
 
 

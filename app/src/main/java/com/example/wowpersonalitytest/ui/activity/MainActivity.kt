@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity(), FragmentSwitchListener {
 
     override fun isFinishing(): Boolean {
         return super.isFinishing()
-        Log.d(LogPrinter, "Is Finishing")
+        Log.d(LOG_TAG_MAIN, "Is Finishing")
     }
 
 }

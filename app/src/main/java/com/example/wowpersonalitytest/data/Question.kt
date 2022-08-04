@@ -8,5 +8,4 @@ data class Question(
     @StringRes val questionResId: Int,
     @DrawableRes val imageResId: Int,
     val answer: Boolean
-    ) {
-}
+    )

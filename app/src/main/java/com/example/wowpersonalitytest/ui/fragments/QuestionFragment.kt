@@ -1,7 +1,6 @@
 package com.example.wowpersonalitytest.ui.fragments
 
 
-
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +12,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.wowpersonalitytest.R
 import com.example.wowpersonalitytest.data.Question
@@ -33,8 +31,6 @@ class QuestionFragment : Fragment() {
     private var switchListener: FragmentSwitchListener? = null
     private var _fragmentBinding: FragmentQuizBinding? = null
     private val fragmentBinding get() = _fragmentBinding!!
-    private lateinit var answeredQuestions: MutableList<Int>
-    private var wrongAnswers: Int = 0
     private val viewModel: QuestionViewModel by viewModels<QuestionViewModel>()
 
     // TODO: Rename and change types of parameters
@@ -50,10 +46,8 @@ class QuestionFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         Log.d(LOG_TAG, "onCreateViewFragment")
-        // Inflate the layout for this fragment
         _fragmentBinding = FragmentQuizBinding.inflate(layoutInflater)
-        answeredQuestions = mutableListOf()
-        setQuestionsAttributes(viewModel.data.first())
+        setAnotherQuestion(viewModel.data.first())
         return fragmentBinding.root
     }
 
@@ -64,65 +58,68 @@ class QuestionFragment : Fragment() {
     }
 
     private fun initListeners() {
-        fragmentBinding.buttonTrueAnswer.setOnClickListener(View.OnClickListener {
-            answeredQuestions.add(currentQuestion)
-            disableButtons(fragmentBinding.buttonFalseAnswer, fragmentBinding.buttonTrueAnswer)
-            checkAnswer(true)
-            if (isEndOfQuiz(viewModel.data.size, answeredQuestions.size)) {
-                prepareInterfaceForResults(
-                    fragmentBinding.buttonTrueAnswer,
-                    fragmentBinding.buttonFalseAnswer,
-                    fragmentBinding.buttonPreviousQuestion,
-                    fragmentBinding.buttonNextQuestion,
-                    fragmentBinding.textView,
-                )
-                fragmentBinding.buttonResults.isVisible = true
-            }
+        fragmentBinding.buttonTrue.setOnClickListener(View.OnClickListener {
+            answerTheQuestion(true)
         })
 
         fragmentBinding.buttonFalseAnswer.setOnClickListener(View.OnClickListener {
-            answeredQuestions.add(currentQuestion)
-            disableButtons(fragmentBinding.buttonFalseAnswer, fragmentBinding.buttonTrueAnswer)
-            checkAnswer(false)
-            if (isEndOfQuiz(viewModel.data.size, answeredQuestions.size)) {
-                prepareInterfaceForResults(
-                    fragmentBinding.buttonTrueAnswer,
-                    fragmentBinding.buttonFalseAnswer,
-                    fragmentBinding.buttonPreviousQuestion,
-                    fragmentBinding.buttonNextQuestion,
-                    fragmentBinding.textView,
-                )
-                fragmentBinding.buttonResults.isVisible = true
-            }
+            answerTheQuestion(false)
         })
 
         fragmentBinding.buttonNextQuestion.setOnClickListener(View.OnClickListener {
-            setQuestionsAttributes(getNextQuestion())
-            if (!isAnswered(currentQuestion)) enableButtons(
-                fragmentBinding.buttonTrueAnswer,
-                fragmentBinding.buttonFalseAnswer
-            )
-            else disableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
-
+            setAnotherQuestion(getNextQuestion())
+            if (!viewModel.isAnswered(viewModel.currentQuestion)) {
+                enableButtons(
+                    fragmentBinding.buttonTrue,
+                    fragmentBinding.buttonFalseAnswer
+                )
+            } else disableButtons(fragmentBinding.buttonTrue, fragmentBinding.buttonFalseAnswer)
         })
 
         fragmentBinding.buttonPreviousQuestion.setOnClickListener(View.OnClickListener {
-            setQuestionsAttributes(getPreviousQuestion())
-            if (!isAnswered(currentQuestion)) enableButtons(
-                fragmentBinding.buttonTrueAnswer,
-                fragmentBinding.buttonFalseAnswer
-            )
-            else disableButtons(fragmentBinding.buttonTrueAnswer, fragmentBinding.buttonFalseAnswer)
+            setAnotherQuestion(getPreviousQuestion())
+            if (!viewModel.isAnswered(viewModel.currentQuestion)) {
+                enableButtons(
+                    fragmentBinding.buttonTrue,
+                    fragmentBinding.buttonFalseAnswer
+                )
+            } else disableButtons(fragmentBinding.buttonTrue, fragmentBinding.buttonFalseAnswer)
         })
 
         fragmentBinding.buttonResults.setOnClickListener {
-            switchListener?.switch(ResultsFragment.newInstance(viewModel.data.size-wrongAnswers, viewModel.data.size))
+            switchListener?.switch(
+                ResultsFragment.newInstance(
+                    viewModel.data.size - viewModel.wrongAnswers,
+                    viewModel.data.size
+                )
+            )
         }
 
     }
 
 
+    //Stay in ui because of context
+    private fun checkAnswer(userAnswer: Boolean) {
+        if (viewModel.isProperAnswer(userAnswer)) {
+            Toast.makeText(context, "Good!", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "naaah, try again", Toast.LENGTH_SHORT).show()
+            viewModel.wrongAnswers++
+        }
+    }
 
+//ui
+    private fun answerTheQuestion(answer: Boolean) {
+        viewModel.markAsAnswered()
+        disableButtons(fragmentBinding.buttonFalseAnswer, fragmentBinding.buttonTrue)
+        checkAnswer(answer)
+        if (viewModel.isEndOfQuiz(viewModel.data.size, viewModel.answeredQuestions.size)) {
+           // hideViews(fragmentBinding.root)
+            fragmentBinding.buttonResults.isVisible = true
+        }
+    }
+
+//ui
     private fun disableButtons(vararg view: Button) {
         view.forEach {
             it.isClickable = false
@@ -130,6 +127,7 @@ class QuestionFragment : Fragment() {
         }
     }
 
+//ui
     private fun enableButtons(vararg view: Button) {
         view.forEach {
             it.isClickable = true
@@ -142,50 +140,30 @@ class QuestionFragment : Fragment() {
         }
     }
 
-
-    private fun getNextQuestion(): Question {
-        increaseQuestionsNumber()
-        return viewModel.data[currentQuestion]
-    }
-
-    private fun getPreviousQuestion(): Question {
-        decreaseQuestionNumber()
-        return viewModel.data[currentQuestion]
-    }
-
-    private fun isProperAnswer(userAnswer: Boolean): Boolean {
-        return getProperAnswer(viewModel.data[currentQuestion]) == userAnswer
-    }
-
-    private fun checkAnswer(userAnswer: Boolean) {
-        if (isProperAnswer(userAnswer)) {
-            Toast.makeText(context, "Good!", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, "naaah, try again", Toast.LENGTH_SHORT).show()
-            wrongAnswers++
-        }
-    }
-
-    private fun getProperAnswer(question: Question) = question.answer
-
-
-    private fun setQuestionsAttributes(question: Question) {
+//ui
+    private fun setAnotherQuestion(question: Question) {
         fragmentBinding.apply {
             imageView.setImageResource(question.imageResId)
             textView.setText(question.questionResId)
         }
     }
 
-    private fun isAnswered(numberOfQuestion: Int): Boolean =
-        answeredQuestions.contains(numberOfQuestion)
 
-
-    private fun prepareInterfaceForResults(vararg invisibleView: View) {
-        invisibleView.forEach { it.isVisible = false }
+    private fun getNextQuestion(): Question {
+        viewModel.increaseQuestionsNumber()
+        return viewModel.data[viewModel.currentQuestion]
     }
 
-    private fun isEndOfQuiz(numberOfQuestions: Int, numberOfAnswers: Int) =
-        numberOfAnswers == numberOfQuestions
+//ui
+    private fun getPreviousQuestion(): Question {
+        viewModel.decreaseQuestionNumber()
+        return viewModel.data[viewModel.currentQuestion]
+    }
+
+//ui
+    private fun hideViews(vararg invisibleView: View) {
+        invisibleView.forEach { it.isVisible = false }
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
