@@ -38,7 +38,7 @@ class ResultsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val text = requireActivity().resources.getString(R.string.result_of_quiz, 2,3)
+        val text = res?.getString(R.string.result_of_quiz, 2,3)
         bindingFragment.textResult.text =
             res?.getString(R.string.text_results, correctAnswers, numberOfQuestions)
     }

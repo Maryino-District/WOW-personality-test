@@ -22,10 +22,12 @@ import com.example.wowpersonalitytest.ui.viewmodel.QuestionViewModel
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "properAnswers"
-private const val ARG_PARAM2 = "numberOfQuestions"
-private const val LOG_TAG = "QuestionFragment"
 // Counter of question number
-
+private const val LOG_TAG = "QuestionFragment"
+private const val ARG_PARAM2 = "numberOfQuestions"
+private const val BUNDLE_KEY_INDEX = "KeyIndex"
+private const val BUNDLE_KEY_ANSWERED = "KeyAnswered"
+private const val BUNDLE_KEY_WRONG_ANSWERS = "KeyWrongAnswers"
 
 class QuestionFragment : Fragment() {
     private var switchListener: FragmentSwitchListener? = null
@@ -48,6 +50,9 @@ class QuestionFragment : Fragment() {
         Log.d(LOG_TAG, "onCreateViewFragment")
         _fragmentBinding = FragmentQuizBinding.inflate(layoutInflater)
         setAnotherQuestion(viewModel.data.first())
+        viewModel.setBundleCurrentQuestion(savedInstanceState?.getInt(BUNDLE_KEY_INDEX) ?: 0)
+        viewModel.answeredQuestions = savedInstanceState?.getIntArray(BUNDLE_KEY_ANSWERED)?.toMutableList() ?: mutableListOf()
+        viewModel.wrongAnswers = savedInstanceState?.getInt(BUNDLE_KEY_WRONG_ANSWERS) ?: 0
         return fragmentBinding.root
     }
 
@@ -174,7 +179,7 @@ class QuestionFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Log.d(LOG_TAG, "onStartFragment")
+        Log.d(LOG_TAG, "onStartFragment and current is ${viewModel.currentQuestion}")
 
     }
 
@@ -210,6 +215,15 @@ class QuestionFragment : Fragment() {
         switchListener = null
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.apply{
+            putInt(BUNDLE_KEY_INDEX, viewModel.currentQuestion)
+            putInt(BUNDLE_KEY_WRONG_ANSWERS, viewModel.wrongAnswers)
+            putIntArray(BUNDLE_KEY_ANSWERED, viewModel.answeredQuestions.toIntArray())
+        }
+        Log.d(LOG_TAG, "OnSaveInstace")
+    }
 
     companion object {
         /**

@@ -34,6 +34,10 @@ class QuestionViewModel : ViewModel() {
         return true
     }
 
+    fun setBundleCurrentQuestion(currentQuestion: Int) {
+        _currentQuestion = currentQuestion
+    }
+
     fun increaseQuestionsNumber(): Boolean {
         _currentQuestion = (currentQuestion + 1) % getNumberOfQuestions(data)
         return true
