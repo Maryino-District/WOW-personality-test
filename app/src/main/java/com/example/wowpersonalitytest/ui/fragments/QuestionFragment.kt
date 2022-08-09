@@ -19,11 +19,8 @@ import com.example.wowpersonalitytest.databinding.FragmentQuizBinding
 import com.example.wowpersonalitytest.ui.interfaces.FragmentSwitchListener
 import com.example.wowpersonalitytest.ui.viewmodel.QuestionViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "properAnswers"
-// Counter of question number
 private const val LOG_TAG = "QuestionFragment"
+private const val ARG_PARAM1 = "properAnswers"
 private const val ARG_PARAM2 = "numberOfQuestions"
 private const val BUNDLE_KEY_INDEX = "KeyIndex"
 private const val BUNDLE_KEY_ANSWERED = "KeyAnswered"
@@ -49,10 +46,13 @@ class QuestionFragment : Fragment() {
     ): View? {
         Log.d(LOG_TAG, "onCreateViewFragment")
         _fragmentBinding = FragmentQuizBinding.inflate(layoutInflater)
-        setAnotherQuestion(viewModel.data.first())
-        viewModel.setBundleCurrentQuestion(savedInstanceState?.getInt(BUNDLE_KEY_INDEX) ?: 0)
-        viewModel.answeredQuestions = savedInstanceState?.getIntArray(BUNDLE_KEY_ANSWERED)?.toMutableList() ?: mutableListOf()
-        viewModel.wrongAnswers = savedInstanceState?.getInt(BUNDLE_KEY_WRONG_ANSWERS) ?: 0
+        savedInstanceState?.let {
+            viewModel.setCurrentQuestion(it.getInt(BUNDLE_KEY_INDEX))
+            viewModel.answeredQuestions = it.getIntArray(BUNDLE_KEY_ANSWERED)?.toMutableList() ?: mutableListOf()
+            viewModel.wrongAnswers = it.getInt(BUNDLE_KEY_WRONG_ANSWERS)
+        }
+        setQuestion(viewModel.data[viewModel.currentQuestion])
+        if(viewModel.isAnswered(viewModel.currentQuestion)) disableButtons(fragmentBinding.buttonFalseAnswer, fragmentBinding.buttonTrue)
         return fragmentBinding.root
     }
 
@@ -72,7 +72,7 @@ class QuestionFragment : Fragment() {
         })
 
         fragmentBinding.buttonNextQuestion.setOnClickListener(View.OnClickListener {
-            setAnotherQuestion(getNextQuestion())
+            setQuestion(getNextQuestion())
             if (!viewModel.isAnswered(viewModel.currentQuestion)) {
                 enableButtons(
                     fragmentBinding.buttonTrue,
@@ -82,7 +82,7 @@ class QuestionFragment : Fragment() {
         })
 
         fragmentBinding.buttonPreviousQuestion.setOnClickListener(View.OnClickListener {
-            setAnotherQuestion(getPreviousQuestion())
+            setQuestion(getPreviousQuestion())
             if (!viewModel.isAnswered(viewModel.currentQuestion)) {
                 enableButtons(
                     fragmentBinding.buttonTrue,
@@ -146,7 +146,7 @@ class QuestionFragment : Fragment() {
     }
 
 //ui
-    private fun setAnotherQuestion(question: Question) {
+    private fun setQuestion(question: Question) {
         fragmentBinding.apply {
             imageView.setImageResource(question.imageResId)
             textView.setText(question.questionResId)
@@ -217,12 +217,12 @@ class QuestionFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.apply{
+        Log.d(LOG_TAG, "save state")
+        outState.apply {
             putInt(BUNDLE_KEY_INDEX, viewModel.currentQuestion)
-            putInt(BUNDLE_KEY_WRONG_ANSWERS, viewModel.wrongAnswers)
             putIntArray(BUNDLE_KEY_ANSWERED, viewModel.answeredQuestions.toIntArray())
+            putInt(BUNDLE_KEY_WRONG_ANSWERS, viewModel.wrongAnswers)
         }
-        Log.d(LOG_TAG, "OnSaveInstace")
     }
 
     companion object {

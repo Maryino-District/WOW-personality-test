@@ -26,6 +26,11 @@ class QuestionViewModel : ViewModel() {
         }
 
     }
+
+    fun setCurrentQuestion(currentQuestion: Int) {
+        _currentQuestion = currentQuestion
+    }
+
     fun getNumberOfQuestions(questions: List<Question>): Int = questions.size
 
     fun decreaseQuestionNumber(): Boolean {
